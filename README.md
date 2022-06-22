@@ -1,6 +1,6 @@
 # SHA256-FINAL
 
-Questo è una versione più o meno reversibile di SHA256.
+Questo è una versione più o meno reversibile di SHA256.  
 Nonostante alcuni problemi il programma riesce ad invertire tutto quello che faceva nella prima fase.
 
 # Per eseguire
@@ -11,6 +11,6 @@ Nonostante alcuni problemi il programma riesce ad invertire tutto quello che fac
 
 # Avvertenze
 
-Attualmente il progetto è ancora in lavorazione ed infatti per cambiare input bisogna modificare per forza il codice.
+Attualmente il progetto è ancora in lavorazione ed infatti per cambiare input bisogna modificare per forza il codice.  
 Ci sono ancora delle piccole cose non reversibili tipo i puntatori  ma appena potrò cercherò di cambiare aggiustare il tutto.
 
