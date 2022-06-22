@@ -7,7 +7,7 @@ using std::endl;
  
 int main(int argc, char *argv[])
 {
-    string input = "Hellooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo";
+    string input = "Addio e Grazie per il Pesce";
     string output1 = sha256(input);
  
     cout << "sha256('"<< input << "'):" << output1 << endl;

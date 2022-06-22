@@ -319,14 +319,10 @@ void SHA256::update(unsigned char *message, unsigned int len) //i valori sono il
         lp++;
         new_len += len - rem_len; //
 
-        cout << "block_nb: " << block_nb << endl;
-
         mem[lp] += block_nb;
         block_nb -= mem[lp];
         lp++;
         block_nb += new_len / SHA224_256_BLOCK_SIZE;
-        cout << "block_nb: " << block_nb << endl;
-
 
         shifted_message = message + rem_len; //da capire come rendere reversibile
 
@@ -349,22 +345,18 @@ void SHA256::update(unsigned char *message, unsigned int len) //i valori sono il
 
         m_tot_len += (block_nb + 1) << 6;
 
-        cout << "block_nb: " << block_nb << endl;
         mem[lp] += block_nb;
         block_nb -= mem[lp];
         lp++;
 
-        cout << "new_len: " << new_len << endl;
         mem[lp] += new_len;
         new_len -= mem[lp];
         lp++;
 
-        cout << "rem_len: " << rem_len << endl;
         mem[lp] += rem_len;
         rem_len -= mem[lp];
         lp++;
-    
-        cout << "tmp_len: " << tmp_len << endl;
+
         mem[lp] += tmp_len;
         tmp_len -= mem[lp];
         lp++;
@@ -474,11 +466,6 @@ void SHA256::rev_update(unsigned char *message, unsigned int len) //i valori son
     cout << "sp: " << sp << endl;
     cout << "pp: " << pp << endl;
 
-    for (int k = 0; k < 100; k++) {
-
-        cout <<mem[k] << endl;
-
-    }
 }
  
 void SHA256::final(unsigned char *digest) //Questa parte si attua sull'ultimo blocc, ossia quello che presenta i bit a 0 e la lunnghezza del messaggio in 64 bit.
