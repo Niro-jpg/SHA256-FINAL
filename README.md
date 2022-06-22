@@ -12,5 +12,5 @@ Nonostante alcuni problemi il programma riesce ad invertire tutto quello che fac
 # Avvertenze
 
 Attualmente il progetto è ancora in lavorazione ed infatti per cambiare input bisogna modificare per forza il codice.  
-Ci sono ancora delle piccole cose non reversibili tipo i puntatori  ma appena potrò cercherò di cambiare aggiustare il tutto.
+Ci sono ancora delle piccole cose non reversibili tipo i puntatori  ma appena potrò cercherò di cambiare ed aggiustare il tutto.
 
