@@ -123,7 +123,6 @@ void SHA256::rev_transform()
 
             lp--;
             REV_SHA2_PACK32(&sub_block[j - 1 << 2], &w[j - 1]);
-            cout << "w[j]: " << w[j - 1] << endl; 
             w[j - 1] += mem[lp];
             mem[lp] -= w[j - 1];
 
