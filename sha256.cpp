@@ -46,7 +46,6 @@ void SHA256::rev_transform()
 
         lp--;
         for (j += mem[lp], mem[lp] -= j; j > 0; j--) {
-
             lp--;
             wv[0] -= t1 + t2;
             wv[0] += mem[lp];
@@ -124,17 +123,18 @@ void SHA256::rev_transform()
 
             lp--;
             REV_SHA2_PACK32(&sub_block[j - 1 << 2], &w[j - 1]);
+            cout << "w[j]: " << w[j - 1] << endl; 
             w[j - 1] += mem[lp];
             mem[lp] -= w[j - 1];
 
         }
 
-
         pp--;
         sub_block = 0;
-        sub_block = pmem[lp];
+        sub_block = pmem[pp];
   
     }
+    
 
 }
 
@@ -374,6 +374,7 @@ void SHA256::update(unsigned char *message, unsigned int len) //i valori sono il
 
 void SHA256::rev_update(unsigned char *message, unsigned int len) //i valori sono il mesasggio e la sua lunghezza
 {
+
     unsigned int block_nb = 0;
     unsigned int new_len, rem_len, tmp_len;
     unsigned char *shifted_message;
@@ -521,6 +522,7 @@ void SHA256::final(unsigned char *digest) //Questa parte si attua sull'ultimo bl
 
 void SHA256::rev_final(unsigned char *digest) //Questa parte si attua sull'ultimo blocc, ossia quello che presenta i bit a 0 e la lunnghezza del messaggio in 64 bit.
 {
+
     unsigned int block_nb = 0;
     unsigned int pm_len = 0;
     unsigned int len_b = 0;
@@ -541,8 +543,9 @@ void SHA256::rev_final(unsigned char *digest) //Questa parte si attua sull'ultim
     lp--;
 
     for (i += mem[lp], mem[lp] -= i ; i > 0; i--) {
-        REV_SHA2_UNPACK32(m_h[i], &digest[i << 2]); // capire cosa fa e rendere reversibile 
+        REV_SHA2_UNPACK32(m_h[i], &digest[i << 2]); 
     }
+
     rev_transform();
 
     REV_SHA2_UNPACK32(len_b, m_block + pm_len - 4); //idem
