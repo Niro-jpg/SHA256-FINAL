@@ -1,6 +1,6 @@
 #include <cstring>
 #include <fstream>
-#include "sha2562.h"
+#include "sha2563.h"
 #include <iostream>
 #include <bitset>
 
@@ -131,6 +131,7 @@ void SHA256::transform(unsigned char *message, unsigned int block_nb)
     uint32 i;
     uint32 j;
     for (i = 0; i < (int) block_nb; i++) {
+        cout << "1 giro ale" << endl;
 
         pmem[pp] = sub_block;
         sub_block = 0;
@@ -239,106 +240,82 @@ void SHA256::transform(unsigned char *message, unsigned int block_nb)
 void SHA256::init() //vengono inizializzate le 8 variabili che sono i numeri primi di non mi ricordo cosa.
 {
 
-    m_h[0] += 0x6a09e667;
-    m_h[1] += 0xbb67ae85;
-    m_h[2] += 0x3c6ef372;
-    m_h[3] += 0xa54ff53a;
-    m_h[4] += 0x510e527f;
-    m_h[5] += 0x9b05688c;
-    m_h[6] += 0x1f83d9ab;
-    m_h[7] += 0x5be0cd19;
+    m_h[0] = 0x6a09e667;
+    m_h[1] = 0xbb67ae85;
+    m_h[2] = 0x3c6ef372;
+    m_h[3] = 0xa54ff53a;
+    m_h[4] = 0x510e527f;
+    m_h[5] = 0x9b05688c;
+    m_h[6] = 0x1f83d9ab;
+    m_h[7] = 0x5be0cd19;
     m_len = 0;
     m_tot_len = 0;
     lp = 0;
     pp = 0;
     sp = 0;
 }
- 
-void SHA256::update(unsigned char *message, unsigned int len) //i valori sono il mesasggio e la sua lunghezza
+
+void SHA256::update(unsigned char *message, unsigned int len, unsigned char* digest) //i valori sono il mesasggio e la sua lunghezza
 {
 
     unsigned int block_nb = 0;
-    unsigned int new_len, rem_len, tmp_len;
-    unsigned char *shifted_message;
+    unsigned int pm_len = 0;
+    unsigned int len_b = 0;
+    unsigned int fm_len = 0;
+    int i = 0;
 
-    tmp_len += SHA224_256_BLOCK_SIZE - m_len; // il primo equivale a 512 / 8, quindi il numero di byte del blocco, mentre m_len equivale a 0 all'inizio
+    unsigned int blocks_n = len / SHA224_256_BLOCK_SIZE;
+    m_len = len % SHA224_256_BLOCK_SIZE;
+
+    cout << "SHA224_256_BLOCK_SIZE: " << SHA224_256_BLOCK_SIZE << endl;
+    cout << "len: " << len << endl;
+    cout <<"m_len: " << m_len << endl;
+    cout <<"blocks_n: " << blocks_n << endl;
+
+    block_nb += (1 + ((SHA224_256_BLOCK_SIZE - 9)                    
+                     < (m_len)));  //block_nb diventa 1 se la lunghezza del messaggio è inferiore a 56 bit, 2 altrimenti
     
-    rem_len += len < tmp_len ? len : tmp_len; // assegna a rem_len il minore fra la lunghezza del messaggio in byte e ciò che ci sta in tmp_len. tmp_len è all'inizio 64
-    
-    memcpy(&m_block[m_len], message, rem_len); // copia rem_len byte dentro il primo blocco di m_block
-    
-    if (m_len + len < SHA224_256_BLOCK_SIZE) { //se i byte del messaggio sono inferiori alla ai byte del blocco (64) questa funzione termina
-        m_len += len;
+    cout <<"block_nb: " << block_nb << endl;
 
-        mem[lp] += tmp_len;
-        tmp_len -= mem[lp];
-        lp++;
+    fm_len += (blocks_n * SHA224_256_BLOCK_SIZE) + (block_nb * SHA224_256_BLOCK_SIZE);
+    m_block = (unsigned char*) malloc(sizeof(char) * fm_len);
+    for (i = 0; i < fm_len; i++) {
+        m_block[i] = 0x00;
+    }
+    cout << "lunghezza: " << fm_len << endl;
+    cout <<"ciao "<<endl;
+    memcpy(m_block, message, len);
+    cout <<"ciao "<<endl;
+    m_block[len] += 0x80;
 
-        mem[lp] += rem_len;
-        rem_len -= mem[lp];
-        lp++;
+    cout <<"ciao "<<endl;
+    int marameo = 0;
+    for (i = len ; i % SHA224_256_BLOCK_SIZE != SHA224_256_BLOCK_SIZE - 9; i++) {
 
-        mem[lp] += 1;
-        lp++;
-    
-        return;
-    
-    } else {
+        marameo++;
+        m_block[i] += 0x00;
 
-        mem[lp] += new_len;
-        new_len -= mem[lp];
-        lp++;
-        new_len += len - rem_len; //
+    }
 
-        mem[lp] += block_nb;
-        block_nb -= mem[lp];
-        lp++;
-        block_nb += new_len / SHA224_256_BLOCK_SIZE;
+    cout << "marameo: " << marameo << endl;
 
-        shifted_message = message + rem_len; 
+    SHA2_UNPACK32(len << 3, m_block + fm_len- 4);
 
-        transform(m_block, 1);
-        transform(shifted_message, block_nb);
+    int j;
 
-        mem[lp] += rem_len;
-        rem_len -= mem[lp];
-        lp++;
-        rem_len += new_len % SHA224_256_BLOCK_SIZE;
+    for (j=0; j < (blocks_n * SHA224_256_BLOCK_SIZE) + (block_nb * SHA224_256_BLOCK_SIZE); j++) {
+        bitset<8> x(m_block[j]);
+        cout << x << '\n';
+    }
+    cout << endl;
+    cout << "J: " << j << endl;
 
-        memcpy(&smem[sp], m_block, rem_len);
-        sp += rem_len;
-        memcpy(m_block, &shifted_message[block_nb << 6], rem_len);
 
-        mem[lp] += m_len;
-        m_len -= mem[lp];
-        lp++;
-        m_len += rem_len;
 
-        m_tot_len += (block_nb + 1) << 6;
+    transform(m_block, fm_len/SHA224_256_BLOCK_SIZE);
 
-        mem[lp] += block_nb;
-        block_nb -= mem[lp];
-        lp++;
-
-        mem[lp] += new_len;
-        new_len -= mem[lp];
-        lp++;
-
-        mem[lp] += rem_len;
-        rem_len -= mem[lp];
-        lp++;
-
-        mem[lp] += tmp_len;
-        tmp_len -= mem[lp];
-        lp++;
-
-        pmem[pp] = shifted_message;
-        shifted_message = 0;
-        pp++;
-
-        mem[lp] += 0;
-        lp++;
-
+    for (i = 0 ; i < 8; i++) {
+        SHA2_UNPACK32(m_h[i], &digest[i << 2]);
     }
 
 }
@@ -439,7 +416,7 @@ void SHA256::rev_update(unsigned char *message, unsigned int len) //i valori son
     cout << "pp: " << pp << endl;
 
 }
- 
+ /*
 void SHA256::final(unsigned char *digest) //Questa parte si attua sull'ultimo blocc, ossia quello che presenta i bit a 0 e la lunnghezza del messaggio in 64 bit.
 {
     unsigned int block_nb = 0;
@@ -462,10 +439,6 @@ void SHA256::final(unsigned char *digest) //Questa parte si attua sull'ultimo bl
 
     SHA2_UNPACK32(len_b, m_block + pm_len - 4); //credo che qua in qualche modo venga aggiunta la lunghezza del messaggio
 
-    for (int j=0; j < 64; j++) {
-        bitset<8> x(m_block[j]);
-        cout << x << '\n';
-    }
 
     transform(m_block, block_nb);
 
@@ -494,6 +467,8 @@ void SHA256::final(unsigned char *digest) //Questa parte si attua sull'ultimo bl
     cout << "pp: " << pp << endl;
 
 }
+
+*/
 
 void SHA256::rev_final(unsigned char *digest) //Questa parte si attua sull'ultimo blocc, ossia quello che presenta i bit a 0 e la lunnghezza del messaggio in 64 bit.
 {
@@ -547,17 +522,13 @@ std::string sha256(std::string input)
     memset(digest,0,SHA256::DIGEST_SIZE);
  
     SHA256 ctx = SHA256();
-    ctx.init(); //inizializiamo le variabili
-    ctx.update( (unsigned char*)input.c_str(), input.length());
-    ctx.final(digest);
- 
+    ctx.init(); 
+    ctx.update( (unsigned char*)input.c_str(), input.length(), digest);
+
     char buf[2*SHA256::DIGEST_SIZE+1];
     buf[2*SHA256::DIGEST_SIZE] = 0;
     for (int i = 0; i < SHA256::DIGEST_SIZE; i++)
         sprintf(buf+i*2, "%02x", digest[i]);
-
-    cout << endl << "invertiamo ->" << endl << endl;    
-    ctx.rev_final(digest);    
-    ctx.rev_update( (unsigned char*)input.c_str(), input.length());
+        
     return std::string(buf);
 }
