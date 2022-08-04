@@ -434,6 +434,7 @@ void SHA256::rev_update(unsigned char *message, unsigned int len) //i valori son
     }
 
     tmp_len -= SHA224_256_BLOCK_SIZE - m_len;
+    
     cout << "lp: " << lp << endl;
     cout << "sp: " << sp << endl;
     cout << "pp: " << pp << endl;

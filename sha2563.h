@@ -15,9 +15,9 @@ protected:
 public:
     void init();
     void update(unsigned char *message, unsigned int len, unsigned char* digest);
-    void rev_update(unsigned char *message, unsigned int len);
-    void final(unsigned char *digest);
-    void rev_final(unsigned char *digest);
+    void rev_update(unsigned char *message, unsigned int len, unsigned char *digest);
+    void pop(unsigned int* a);
+    void push(unsigned int* a);  
     static const unsigned int DIGEST_SIZE = ( 256 / 8);
     uint32 mem[MEM_LIMIT];
     uint32 smem[MEM_LIMIT];
